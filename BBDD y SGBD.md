@@ -110,3 +110,5 @@ Selecciona todos los datos de los clientes que cumplen con la segunda consulta, 
 ```
 CREATE OR REPLACE consulta1 SELECT * From Pedidos
 ```
+
+paula es una petardilla
