@@ -8,5 +8,6 @@ git remote add origin "link repositorio"
 git branch -M main
 git push -u origin main
 git add .
-git commit -u "titulo commit"
+git commit -m "titulo commit"
+git push origin main
 ```
