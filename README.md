@@ -155,7 +155,6 @@ Nota: seguramente haya cosas algo extrañas e inconcisas.
     - Modelos de implementación en la nube: IaaS, PaaS, SaaS.
 2. **Creación y Configuración de Cuentas en AWS**
     
-    - Registro en AWS.
     - Configuración de la interfaz de línea de comandos (CLI) y AWS Management Console.
     - Administración de identidad y acceso: IAM (Identity and Access Management).
 
