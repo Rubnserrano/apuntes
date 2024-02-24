@@ -69,8 +69,8 @@ Es un servicio totalmente administrado y proporciona una serie de ventajas espec
 Se trata de un servicio de almacenamiento de datos (llamados objetos) que ofrece escalabilidad, disponiblidad de datos y seguridad. Es posible utilizar Amazon S3 para almacenar y proteger cualquier cantidad de datos para diversos casos de uso, tales como datalakes, sitios web, aplicaciones móviles, copias de seguirdad, dispositivos IoT y análisis de big data. Estos datos se guardan en una especie de contenedores llamados buckets.
 
 S3 ofrece varios tipo de almacenamiento diseñados para distintos casos de uso.
+<img src=  https://github.com/Rubnserrano/apuntes/blob/main/imgs/tipos_s3.jpg?raw=true /> 
 
-![[../imgs/tipos_s3.jpg]]
 #### Glue
 AWS Glue es un servicio de integración de datos sin servidor que facilita a los usuarios de análisis descubrir, preparar, migrar e integrar datos de varios orígenes. Puede utilizarlo para análisis, ML y desarrollo de apps.
 Con este servicio puede crear, ejecutar y supervisar visualmente pipelines ETL para cargar datos en datalakes. Además, puede buscar y consultar datos ctalogados de forma inmediata mediante Amazon Athena, Amazon EMR y Amazon Redshift.
@@ -168,7 +168,8 @@ destination_node1708777592414 = glueContext.write_dynamic_frame.from_options(fra
 job.commit()
 ```
 
-![[glue_cajitas.png]]
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/glue_cajitas.png?raw=true "/> 
+
 
 Podemos guardar el pipeline pero no nos deja correrlo porque necesita un rol de IAM. Para esto, debemos crearlo desde la cuenta raíz. Seleccionamos AWS Service, y en casos de uso Glue. Por último, damos permisos de S3FullAccess y ejecutamos el job.
 El siguiente paso es crear un crawler en AWS Glue y seleccionar como data source la carpeta de datawarehouse, seleccionamos el mismo rol de IAM creado anteriormente. Ahora debemos seleccionar una base de datos, pero como no la tenemos la creamos desde el mismo Glue en el apartado Databases. Lo seleccionamos y terminamos de crear el crawler y lo corremos.
@@ -179,4 +180,4 @@ Creamos un bucket donde guardaremos los outputs de athena. Para hacer consultas 
 El último servicio que utilizaríamos es Quicksight, pero es necesario crearse una cuenta con 1 mes gratis por lo que para no tener que estar pendiente de tener que cancelarla sólo voy a explicar configurar este servicio con nuestros datos. Lo único que hay que hacer es crear un dataset de Athena y seleccionar nuestra tabla datawarehouse.
 
 
-![[ej_query_spoty.png]]
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/ej_query_spoty.png?raw=true "/> 
