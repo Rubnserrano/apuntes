@@ -13,7 +13,7 @@ Actualmente dichas asignaturas son:
 - Gestión de versiones y despliegue.
 
 Abajo encontraréis las "guías docentes" previsionales creadas con ayuda de ChatGPT con las bases y conocimientos que responden a una serie de skills que me gustaría aprender. 
-Nota: seguramente haya cosas algo extrañas e inconcisas. 
+Nota: seguramente haya cosas algo extrañas e inconcisas y estén sujetas a grandes cambios.
 
 
 
