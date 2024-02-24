@@ -183,4 +183,3 @@ Ejemplo de resultado de consulta:
 El último servicio que utilizaríamos es Quicksight, pero es necesario crearse una cuenta con 1 mes gratis por lo que para no tener que estar pendiente de tener que cancelarla sólo voy a explicar configurar este servicio con nuestros datos. Lo único que hay que hacer es crear un dataset de Athena y seleccionar nuestra tabla datawarehouse.
 
 
-<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/ej_query_spoty.png?raw=true "/> 
