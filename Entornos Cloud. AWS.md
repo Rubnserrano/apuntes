@@ -119,7 +119,6 @@ IAMUserChangePassword
 Guardamos el link inicio de sesión en consola. Cerramos sesión en nuestra cuenta principal e iniciamos desde el link con nuestro nuevo usuario y contraseña.
 
 Creamos un bucket de S3, en este caso el nombre que le pongo es 'proyecto-prueba-spotify' y creamos dos carpetas llamadas staging y datawarehouse. En la vida real, los datos de staging vendrían de una DynamoDB o una instancia de bbdd pero vamos a añadir nuestros datos manualmente. Añadimos a dicha carpeta los datos de albums, artistas y tracks.
-
 Vamos a crear la pipeline con la UI tipo cajitas y para entrar en la interfaz debemos de ir a AWS Glue -> Visual ETL y clickar en el botón naranja Visual ETL.
 Debemos crear tres cajas de S3 en la pestaña de Data source y linkar los archivos artist, album y tracks.
 Lo siguiente que vamos a hacer es hacer un join entre albums y artistas. Para hacer esto clickamos en la pestaña transform y seleccinamos Join para luego unir artist y albums a la caja de join seleccionando la condición artist_id (del archivo album) = id (del archivo artist).
@@ -175,7 +174,11 @@ Podemos guardar el pipeline pero no nos deja correrlo porque necesita un rol de 
 El siguiente paso es crear un crawler en AWS Glue y seleccionar como data source la carpeta de datawarehouse, seleccionamos el mismo rol de IAM creado anteriormente. Ahora debemos seleccionar una base de datos, pero como no la tenemos la creamos desde el mismo Glue en el apartado Databases. Lo seleccionamos y terminamos de crear el crawler y lo corremos.
 Siguiendo el tutorial me daba error al crear el crawler asi que tuve que añadir la política de CloudWatchLogsFullAccess para saber que estaba pasando y AWSGlueConsoleFullAccess para resolver el error.
 
-Creamos un bucket donde guardaremos los outputs de athena. Para hacer consultas primero debemos configurar la salida, que será este bucket y ya podemos hacer queries que se guardarán en las carpetas con la fecha del día de dicho bucket.
+Creamos un bucket donde guardaremos los outputs de athena. Para hacer consultas primero debemos configurar la salida, que será este bucket y ya podemos hacer queries que se guardarán en las carpetas con la fecha del día de dicho bucket
+
+Ejemplo de resultado de consulta:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/ej_query_spoty.png?raw=true "/> 
 
 El último servicio que utilizaríamos es Quicksight, pero es necesario crearse una cuenta con 1 mes gratis por lo que para no tener que estar pendiente de tener que cancelarla sólo voy a explicar configurar este servicio con nuestros datos. Lo único que hay que hacer es crear un dataset de Athena y seleccionar nuestra tabla datawarehouse.
 
