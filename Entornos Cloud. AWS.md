@@ -70,7 +70,7 @@ Se trata de un servicio de almacenamiento de datos (llamados objetos) que ofrece
 
 S3 ofrece varios tipo de almacenamiento diseñados para distintos casos de uso.
 
-![[imgs/tipos_s3.jpg]]
+![[../imgs/tipos_s3.jpg]]
 #### Glue
 AWS Glue es un servicio de integración de datos sin servidor que facilita a los usuarios de análisis descubrir, preparar, migrar e integrar datos de varios orígenes. Puede utilizarlo para análisis, ML y desarrollo de apps.
 Con este servicio puede crear, ejecutar y supervisar visualmente pipelines ETL para cargar datos en datalakes. Además, puede buscar y consultar datos ctalogados de forma inmediata mediante Amazon Athena, Amazon EMR y Amazon Redshift.
