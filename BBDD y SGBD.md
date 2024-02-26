@@ -212,7 +212,7 @@ WHERE constraint_expression;
 
 Las funciones más comunes son las descritas en la siguiente tabla:
 
-<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/agg_functions.jpg?raw=true "/> 
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/agg_functions.png?raw=true "/> 
 
 En lugar de calcular con todas las filas, podemos aplicar estas funciones a grupos de datos. Esto creará tantos resultados como grupos únicos definidos por la cláusula GROUP BY
 
