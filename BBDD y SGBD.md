@@ -1,4 +1,7 @@
-### MySQL
+
+
+# Añadir teoría básica BBDD (clave-valor, normalización...)
+## MySQL
 
 Para iniciar MySQL en la terminal
 
@@ -114,4 +117,120 @@ CREATE OR REPLACE consulta1 SELECT * From Pedidos
 
 ## Ejercicios SQLBolt
 
+Tabla de condicionales y operadores básicos.
+
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sql_statements.png?raw=true "/> 
+
+Ejemeplo consulta de bases de datos de películas cuya fecha no esté entre 2000 y 2010
+```
+SELECT * FROM movies
+WHERE YEAR NOT BETWEEN 2000 AND 2010;
+```
+
+Otra tabla con más casos:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/otros_sql_statements.png?raw=true "/> 
+
+Otras palabras reservadas en SQL son las siguientes:
+- ORDER BY _column_ :  Se pone después de la condición o al final de la secuencia. Puede ir seguido de ASC / DESC
+- LIMIT _num limit_ OFFSET _num offset_: el limit está claro, número de resultados queridos. El valor de OFFSET especificará desde donde contar el número de filas.
+
+````
+SELECT DISTINCT(Director) FROM movies
+ORDER BY Director ASC;
+````
+
+Es equivalente a la orden:
+
+```
+SELECT Director FROM movies
+GROUP BY Director;
+```
+
+
+## Queries multi-tabla con JOINS
+
+La normalización de bases de datos es útil porque minimiza la duplicación de datos en cualquier tabla y permite que los datos de la base de datos crezcan independientemente unos de otros (por ejemplo, los tipos de motores de coche pueden crecer independientemente de cada tipo de coche). Como contrapartida, las consultas se vuelven ligeramente más complejas, ya que tienen que ser capaces de encontrar datos de diferentes partes de la base de datos, y pueden surgir problemas de rendimiento cuando se trabaja con muchas tablas grandes.
+
+Para responder a preguntas sobre una entidad cuyos datos abarcan varias tablas de una base de datos normalizadas, tenemos que aprender a escribir una consulta que pueda combinar todos esos datos y extraer exactamente la información que necesitamos.
+
+Las tablas que comparten información sobre una única entidad necesitan tener una clave primaria que identifique a esa entidad de forma única en toda la base de datos.
+Utilizando la cláusula JOIN en una consulta, podemos combinar datos de filas en dos tablas separadas utilizando esta clave única. La primera de las uniones que presentaremos es la INNER JOIN.
+
+### INNER JOIN
+
+ El INNER JOIN es un proceso que empareja filas de la primera tabla y de la segunda tabla que tienen la misma clave (definida por la restricción ON) para crear una fila de resultado con las columnas combinadas de ambas tablas. Una vez unidas las tablas, se aplican las demás cláusulas que hemos aprendido anteriormente.
+ 
+```
+SELECT column, another_table_column, … 
+FROM mytable 
+INNER JOIN another_table ON mytable.id = another_table.id
+WHERE condition(s)
+ORDER BY column, … ASC/DESC 
+LIMIT num_limit OFFSET num_offset;
+```
+
+### Otros tipos de JOINS
+ Dependiendo de cómo quiera analizar los datos, el INNER JOIN que utilizamos previamente podría no ser suficiente porque la tabla resultante sólo contiene datos que pertenecen a las dos tablas.
+
+Si las dos tablas tienen datos asimétricos, lo que puede ocurrir fácilmente cuando los datos se introducen en diferentes etapas, entonces tendríamos que utilizar un LEFT JOIN, RIGHT JOIN o FULL JOIN en su lugar para asegurarnos de que los datos que necesita no se quedan fuera de los resultados.
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sql_joins.jpg?raw=true "/> 
+
+**Buscar más ejercicios JOINS**
+
+### Alias
+
+Podemos hacer combinaciones de nuestras columnas y crear columnas nuevas con la palabra reservada AS.
+Un ejemplo sencillo para sumar dos presupuestos y calcular el total en millones de dólares sería:
+
+```
+SELECT Year, (Presupuesto1 + Presupuesto2)/1000000 AS Prespuesto_total_millones
+....
+```
+
+También se usan los alias para simplificar los nombres de columnas y tablas
+
+```
+SELECT column AS better_column_name, … 
+FROM a_long_widgets_table_name AS mywidgets
+INNER JOIN widget_sales 
+	ON mywidgets.id = widget_sales.widget_id;
+```
+
+
+### AGG Functions
+
+SQL también soporta el uso de expresiones o funciones de agregación que te permiten resumir la información de un grupo de filas.
+
+De forma general la sintaxis es la siguiente:
+
+```
+SELECT AGG_FUNC(_column_or_expression_) AS aggregate_description, … FROM mytable
+WHERE constraint_expression;
+```
+
+Las funciones más comunes son las descritas en la siguiente tabla:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/agg_functions.jpg?raw=true "/> 
+
+En lugar de calcular con todas las filas, podemos aplicar estas funciones a grupos de datos. Esto creará tantos resultados como grupos únicos definidos por la cláusula GROUP BY
+
+
+## Cláusula HAVING
+
+Nos damos cuenta de que si la orden GROUP BY se ejcuta después del WHERE, ¿cómo podemos filtrar los grupos? Pues con la cláusula HAVING
+
+Sintaxis
+```
+SELECT group_by_column, AGG_FUNC(_column_expression_) AS aggregate_result_alias, … 
+FROM mytable 
+WHERE condition 
+GROUP BY column 
+HAVING group_condition;
+```
+
+**Nota**: Si no estamos utilizando una cláusula GROUP BY, un simple WHERE es suficiente.
+
+
+Me quedo por la lesson 12: https://sqlbolt.com/lesson/select_queries_order_of_execution
