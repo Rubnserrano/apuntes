@@ -110,3 +110,8 @@ Selecciona todos los datos de los clientes que cumplen con la segunda consulta, 
 ```
 CREATE OR REPLACE consulta1 SELECT * From Pedidos
 ```
+
+
+## Ejercicios SQLBolt
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sql_statements.png?raw=true "/> 
