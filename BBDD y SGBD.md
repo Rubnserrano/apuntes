@@ -131,6 +131,20 @@ Otra tabla con más casos:
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/otros_sql_statements.png?raw=true "/> 
 
+Un caso en concreto que no he visto en esta página pero que me he encontrado haciendo otros ejercicios es el siguiente caso de uso:
+Select all records where the first letter of the `City` is an "a" or a "c" or an "s".
+La sentencia sería:
+
+```
+SELECT * FROM Customers
+WHERE City LIKE '[acs]%';
+# si el caso de uso es que no sea ni una a ni una c ni una s sería:
+SELECT * FROM Customers
+WHERE City LIKE '[!acs]%';
+```
+
+De la misma forma si queremos que la condición sea que empiece por cualquier letra de la 'b' a la 's' análogamente se escribiría '[b-s]%'
+
 Otras palabras reservadas en SQL son las siguientes:
 - ORDER BY _column_ :  Se pone después de la condición o al final de la secuencia. Puede ir seguido de ASC / DESC
 - LIMIT _num limit_ OFFSET _num offset_: el limit está claro, número de resultados queridos. El valor de OFFSET especificará desde donde contar el número de filas.
