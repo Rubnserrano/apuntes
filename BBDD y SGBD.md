@@ -145,6 +145,29 @@ WHERE City LIKE '[!acs]%';
 
 De la misma forma si queremos que la condición sea que empiece por cualquier letra de la 'b' a la 's' análogamente se escribiría '[b-s]%'
 
+**Nota**: en un ejercicio de hacker rank me pedía filtrar las ciudades que empezasen por vocal, puse la sentencia
+```
+....
+WHERE City LIKE '[aeiou]%'
+```
+y me daba error y la correcta era esta:
+
+```
+WHERE CITY REGEXP '^[AEIOU]';
+```
+
+Para las ciudades que acabaran en vocal:
+```
+SELECT DISTINCT(CITY) FROM STATION
+WHERE CITY  REGEXP '[aeiou]$'   
+```
+
+Para las ciudades que empiezan y acaban en vocal:
+```
+SELECT Distinct(CITY) FROM STATION
+WHERE CITY REGEXP '^[aeiou].*[aeiou]$'
+```
+
 Otras palabras reservadas en SQL son las siguientes:
 - ORDER BY _column_ :  Se pone después de la condición o al final de la secuencia. Puede ir seguido de ASC / DESC
 - LIMIT _num limit_ OFFSET _num offset_: el limit está claro, número de resultados queridos. El valor de OFFSET especificará desde donde contar el número de filas.
