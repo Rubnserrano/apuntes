@@ -339,6 +339,42 @@ CREATE TABLE movies (
 );
 ```
 
-	
-Me quedo por la lesson 12: https://sqlbolt.com/lesson/select_queries_order_of_execution
+### ALTERING TABLES
+
+Dentro de este apartado tenemos varias opciones: crear o eliminar una columna, renombrar la tabla... entre otros.
+La sintaxis para crear una columna usamos la palabra reservada ADD :
+
+```
+ALTER TABLE mytable 
+ADD column _DataType_ _OptionalTableConstraint_ 
+	DEFAULT default_value;
+```
+
+Para eliminar una columna se usa DROP:
+
+```
+ALTER TABLE mytable 
+DROP column_to_be_deleted;
+```
+
+Mientras que para renombrar una tabla se usa RENAME TO
+
+```
+ALTER TABLE mytable 
+RENAME TO new_table_name;
+```
+### DROPPING TABLES
+
+Por último en este apartado de consultas básicas de SQL tenemos la opción de eliminar tablas.
+
+```
+DROP TABLE IF EXISTS mytable;
+```
+
+Con toda esta información ya tenemos lo necesario para realizar consultas básicas, pero como todo en la informática, esto se puede complicar infinito.
+En el siguiente apartado veremos subqueries y operaciones SET.
+
+
+## SQL INTERMEDIO
+
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
