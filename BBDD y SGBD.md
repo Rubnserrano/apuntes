@@ -375,6 +375,42 @@ Con toda esta información ya tenemos lo necesario para realizar consultas bási
 En el siguiente apartado veremos subqueries y operaciones SET.
 
 
+### EJERCICIOS HACKERRANK.
+En esta página encontraremos un montón de ejercicios para practicar SQL, sin embargo, cuando la cosa se empieza a complicar nos encontramos que las sentencias vistas en el apartado de SQL básico no son suficientes.
+Por tanto, conforme me vaya encontrando ejercicios que precisen explicar nuevas cláusulas o formas de escribir las consultas, las iré escribiendo con su explicación.
+
+Uno de los primeros retos que me encuentro es el caso de condicionales, esta vez con un ejercicio de describir que tipo es un triángulo dado la longitud de sus 3 lados en colúmnas A, B, C.
+Para resolver esto, es necesario como funcionan los IF en SQL.
+
+### IF STATEMENTS
+
+Si queremos que devuelva algo en función de una condición, en este caso no basta con usar un WHERE. Y para que devuelva lo requerido los condicionales deben encontrarse directamente después del SELECT.
+Veamos como sería la sintaxis base y luego el código que resuelve el problema
+
+```
+SELECT
+	IF(condicion1 AND/OR condicion2 ..., Respuesta,
+	IF(....
+	IF(
+		)) AS nombre_columna
+FROM tabla
+```
+
+Un aspecto importante que tenemos que destacar es que se pueden anidar ifs como vemos en el ejemplo.
+
+#### Resolución ejercicio.
+
+```
+SELECT 
+    IF(A + B <= C OR A + C <= B OR B + C <= A, 'Not A Triangle',
+    IF(A = B AND B = C, 'Equilateral',
+    IF(A = B OR A = C OR B = C, 'Isosceles',
+    'Scalene'))) AS Triangle_Type
+FROM 
+    TRIANGLES;
+
+```
+
 ## SQL INTERMEDIO
 
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
