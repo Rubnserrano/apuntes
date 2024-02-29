@@ -115,7 +115,7 @@ CREATE OR REPLACE consulta1 SELECT * From Pedidos
 ```
 
 
-## Ejercicios SQLBolt
+## CURSO SQL BÁSICO SQLBOLT.COM
 
 Tabla de condicionales y operadores básicos.
 
@@ -169,8 +169,9 @@ WHERE CITY REGEXP '^[aeiou].*[aeiou]$'
 ```
 
 Otras palabras reservadas en SQL son las siguientes:
-- ORDER BY _column_ :  Se pone después de la condición o al final de la secuencia. Puede ir seguido de ASC / DESC
+- ORDER BY _column_ :  Se pone después de la condición o al final de la secuencia. Puede ir seguido de ASC / DESC. También se pueden ordenar cadenas por la izquierda o la derecha un numero k de caracteres de la forma: ORDER BY left/right(_COLUMNA_, k)
 - LIMIT _num limit_ OFFSET _num offset_: el limit está claro, número de resultados queridos. El valor de OFFSET especificará desde donde contar el número de filas.
+
 
 ````
 SELECT DISTINCT(Director) FROM movies
@@ -216,7 +217,7 @@ Si las dos tablas tienen datos asimétricos, lo que puede ocurrir fácilmente cu
 
 **Buscar más ejercicios JOINS**
 
-### Alias
+### ALIAS
 
 Podemos hacer combinaciones de nuestras columnas y crear columnas nuevas con la palabra reservada AS.
 Un ejemplo sencillo para sumar dos presupuestos y calcular el total en millones de dólares sería:
@@ -254,7 +255,7 @@ Las funciones más comunes son las descritas en la siguiente tabla:
 En lugar de calcular con todas las filas, podemos aplicar estas funciones a grupos de datos. Esto creará tantos resultados como grupos únicos definidos por la cláusula GROUP BY
 
 
-## Cláusula HAVING
+## HAVING
 
 Nos damos cuenta de que si la orden GROUP BY se ejcuta después del WHERE, ¿cómo podemos filtrar los grupos? Pues con la cláusula HAVING
 
@@ -270,4 +271,74 @@ HAVING group_condition;
 **Nota**: Si no estamos utilizando una cláusula GROUP BY, un simple WHERE es suficiente.
 
 
+### Orden de ejecucición de una query.
+Después de ver las órdenes básicas, debemos tener claro el orden de estas. Una query completa es de la forma:
+
+```
+SELECT DISTINCT column, AGG_FUNC(_column_or_expression_), … 
+FROM mytable 
+	JOIN another_table 
+	ON mytable.column = another_table.column 
+	WHERE _constraint_expression_ 
+	GROUP BY column HAVING _constraint_expression_ 
+	ORDER BY _column_ ASC/DESC 
+	LIMIT _count_ OFFSET _COUNT_;`
+```
+
+### INSERT
+
+```
+INSERT INTO tabla (col1, col2, col3)
+VALUES(valor_col1, valor_col2, valor_col3)
+```
+
+### UPDATE
+
+```
+UPDATE mytable 
+SET column = value_or_expr, other_column = another_value_or_expr, …
+WHERE condition;
+```
+
+### DELETING ROWS
+
+```
+DELETE FROM mi_tabla
+WHERE condicion
+```
+
+**Importante:** Al igual que con la sentencia `UPDATE` anterior, se recomienda ejecutar primero la restricción en una consulta `SELECT` para asegurarse de que se eliminan las filas correctas. Sin una copia de seguridad adecuada o una base de datos de prueba, es muy fácil eliminar datos de forma irrevocable, así que lee siempre tus sentencias Delete dos veces y ejecútalas una.
+
+### CREATING TABLES
+
+```
+CREATE TABLE IF NOT EXISTS mytable ( 
+	column _DataType_ _TableConstraint_ DEFAULT _default_value_, 
+	another_column _DataType_ _TableConstraint_ DEFAULT _default_value_, 
+	… 
+);
+```
+
+Es importante tener en cuenta el schema de la tabla y los tipos de datos que pueden haber. Algunos ejemplos son los siguientes:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/tipos_datos.png?raw=true "/> 
+
+También  es importante saber las constantes de tabla
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/tipos_constantes.png?raw=true "/> 
+
+Un ejemplo de consulta de este estilo sería la siguiente:
+
+```
+CREATE TABLE movies ( 
+	id INTEGER PRIMARY KEY, 
+	title TEXT, 
+	director TEXT, 
+	year INTEGER, 
+	length_minutes INTEGER 
+);
+```
+
+	
 Me quedo por la lesson 12: https://sqlbolt.com/lesson/select_queries_order_of_execution
+Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
