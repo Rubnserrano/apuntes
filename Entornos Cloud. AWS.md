@@ -182,4 +182,33 @@ Ejemplo de resultado de consulta:
 
 El último servicio que utilizaríamos es Quicksight, pero es necesario crearse una cuenta con 1 mes gratis por lo que para no tener que estar pendiente de tener que cancelarla sólo voy a explicar configurar este servicio con nuestros datos. Lo único que hay que hacer es crear un dataset de Athena y seleccionar nuestra tabla datawarehouse.
 
+Ahora volveremos un poco con la teoría basándonos en los cursos que ofrecen Amazon gratuitamente en sus plataformas https://explore.skillbuilder.aws/ y luego realizaremos algunos laboratorios gratuitos que oferta Amazon en https://aws.amazon.com/es/education/awseducate/
+
+En primer lugar voy a realizar el curso 'AWS Cloud Practitioner Essentials' de SkillBuilder con el fin de tener una introducción sólida.
+
+## AWS Cloud Practitioner Essentials
+
+### Diferencia Cloud y On-Premise
+La principal diferencia entre la nube y on-premise radica en la ubicación y la gestión de los recursos informáticos: en la nube, los servicios son proporcionados por un proveedor externo a través de Internet, permitiendo una escalabilidad flexible y un modelo de pago por uso, mientras que on-premise implica mantener y gestionar la infraestructura dentro de las instalaciones de la empresa, lo que ofrece un mayor control pero puede ser menos flexible y requerir una inversión inicial significativa.
+
+### Computación en la nube. 
+#### Introducción y tipos de instancias.
+En este apartado se habla del servicio Elastic Compute Cloud (EC2), que ya introducimos en la introducción a los servicios de AWS. Dependiendo de la necesidad que tengamos EC2 ofrece distintos tipos de máquinas. Por ejemplo, si necesitamos instancias adecuadas para un datawarehouse debemos seleccionar máquinas optimizadas para el almacenamiento. Si en otro caso, necesitamos instancias para bases de datos de high-performance, el tipo de EC2 que deberíamos seleccionar es una optimizada para memoria.
+Estos tipos de EC2 no nos aparecen de esta forma, si no que debemos tener en cuenta las especificaciones de RAM, almacenamiento y procesamiento de la lista de máquinas disponibles (esto puede cambiar por región).
+
+#### Pricing
+En lo relativo al pricing de EC2, Amazon tiene diferentes opciones de pago:
+- On demand: pagas por el tiempo que las instancias están corriendo.
+- Planes de ahorro: se ofrecen precios más bajos en EC2 a cambio de un compromiso de uso mínimo por hora. Esto puede ahorrar hasta el 72% del coste.
+- Instancias reservadas: es una opción de compra anticipada, diseñada para cargas de trabajo estables o predecibles. Se puede pagar por adelantado, entero o de forma parcial, o sin pago inicial.
+La principal diferencia entre estos dos planes es que las instancias reservadas se basan en una capacidad comprometida, mientras que los Saving Plans se basan en un gasto predecible medido en dólares por hora.
+- Instancias spot: se te permite usar instancias de EC2 con un descuento de hasta un 90% pero AWS puede reclamar la instancia cuando quiera, dándote un aviso de 2 min.
+- Hosts dedicados: servidores físicos exclusivamente reservados para el uso de un cliente en particular.
+
+#### Escalado
+
+
+
+
+
 
