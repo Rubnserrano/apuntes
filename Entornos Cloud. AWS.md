@@ -184,11 +184,11 @@ El último servicio que utilizaríamos es Quicksight, pero es necesario crearse 
 
 Ahora volveremos un poco con la teoría basándonos en los cursos que ofrecen Amazon gratuitamente en sus plataformas https://explore.skillbuilder.aws/ y luego realizaremos algunos laboratorios gratuitos que oferta Amazon en https://aws.amazon.com/es/education/awseducate/
 
-En primer lugar voy a realizar el curso 'AWS Cloud Practitioner Essentials' de SkillBuilder con el fin de tener una introducción sólida.
+En primer lugar voy a realizar el curso 'AWS Cloud Practitioner Essentials' de SkillBuilder con el fin de tener una introducción sólida y combinándolos con los cursos 'Getting started with' de AWS Educate.
 
 ## AWS Cloud Practitioner Essentials
 
-### Diferencia Cloud y On-Premise
+#### Diferencia Cloud y On-Premise
 La principal diferencia entre la nube y on-premise radica en la ubicación y la gestión de los recursos informáticos: en la nube, los servicios son proporcionados por un proveedor externo a través de Internet, permitiendo una escalabilidad flexible y un modelo de pago por uso, mientras que on-premise implica mantener y gestionar la infraestructura dentro de las instalaciones de la empresa, lo que ofrece un mayor control pero puede ser menos flexible y requerir una inversión inicial significativa.
 
 ### Computación en la nube. 
@@ -205,7 +205,32 @@ La principal diferencia entre estos dos planes es que las instancias reservadas 
 - Instancias spot: se te permite usar instancias de EC2 con un descuento de hasta un 90% pero AWS puede reclamar la instancia cuando quiera, dándote un aviso de 2 min.
 - Hosts dedicados: servidores físicos exclusivamente reservados para el uso de un cliente en particular.
 
-#### Escalado
+#### Escalabilidad
+Definición: La escalabilidad se refiere a comenzar con solo los recursos necesarios y diseñar la arquitectura de manera que responda automáticamente a cambios en la demanda mediante la expansión o contracción. Como resultado, solo pagas por los recursos que utilizas y no tienes que preocuparte por la falta de capacidad informática para satisfacer las necesidades de tus clientes.
+
+Amazon EC2 ofrece EC2 Auto Scaling que te permite automáticamente añadir o eliminar instancias en respuesta a la demanda. Hay dos enfoques: escalado dinámico, que responde a la demanda cambiante, y escalado predictivo, que programa el número de EC2 que necesitaríamos basado en predicciones. Para escalar más rápido, puedes usar ambos
+
+En términos de escalabilidad, podemos escalar verticalmente (aumentar las especificaciones de nuestras instancias) o de forma horizontal (aumentar el número de instancias).
+
+#### Elastic Load Balancing
+
+
+
+
+
+
+
+
+
+
+
+
+
+# _Terminar MODULE 2: Compute in the Cloud y realizar lab 'Getting Started with Compute'_
+
+Link al lab: https://awseducate.instructure.com/courses/907
+
+
 
 
 
