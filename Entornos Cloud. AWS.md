@@ -228,7 +228,7 @@ En términos de escalabilidad, podemos escalar verticalmente (aumentar las espec
 
 # _Terminar MODULE 2: Compute in the Cloud y realizar lab 'Getting Started with Compute'_
 
-Link al lab: https://awseducate.instructure.com/courses/907
+Link al lab: 
 
 
 
