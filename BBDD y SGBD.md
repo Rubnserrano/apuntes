@@ -411,6 +411,31 @@ FROM
 
 ```
 
+Antes de empezar el apartado de SQL intermedio me gustaría mostrar las diferentes formas de abordar un problema que me he encontrado en hackerrank. Aquí está mi código, que no se adapta a cambios de la bbdd y solo funciona por ensayo y error y todo muy manual porque no sabía otra forma de hacerlo (y lo hice sin usar chatgpt ni mirar documentación):
+
+```
+SELECT concat(NAME, IF(Occupation = "Doctor", "(D)", 
+         if(Occupation = "Actor", "(A)", 
+           if(Occupation = "Singer", "(S)", "(P)"))))  FROM OCCUPATIONS
+ORDER BY NAME;
+
+SELECT 'There are a total of', SUM(Occupation = 'Doctor'), 'doctors.' FROM OCCUPATIONS;
+SELECT 'There are a total of', SUM(Occupation = 'Actor'), 'actors.' FROM OCCUPATIONS;
+SELECT 'There are a total of', SUM(Occupation = 'Singer'), 'singers.' FROM OCCUPATIONS;
+SELECT 'There are a total of', SUM(Occupation = 'Professor'), 'professors.' FROM OCCUPATIONS;
+```
+
+y la siguiente es la que me he encontrado en foros, que se adapta a cambios en las tablas y seguramente sea varias veces más eficiente que mi consulta:
+
+```
+SELECT CONCAT(Name,'(', SUBSTRING(Occupation,1,1),')') FROM OCCUPATIONS ORDER BY Name; 
+
+SELECT CONCAT("There are a total of"," ",count(Occupation)," ",LOWER(Occupation),"s.") FROM OCCUPATIONS GROUP BY Occupation ORDER BY COUNT(Occupation);
+```
+
+Con esto lo que quiero abordar es la importancia de saber que cláusulas hay en SQL y que se puede hacer según los requerimientos que nos pidan.
+
+**Repasar substring, concat**
 ## SQL INTERMEDIO
 
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
