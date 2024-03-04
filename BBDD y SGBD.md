@@ -478,4 +478,50 @@ WHERE column
 #### UNIONS, INTERSECTIONS AND EXCEPTIONS
 
 
+
+
+
+## Ejercicio MURDER MISTERY
+De primeras sabemos que hubo un asesinato en algun lugar de SQL City el dia 15 de enero del 2018.
+Por tanto buscamos en el reporte de escenas del crimen si hay algo registrado con esta consulta:
+
+```
+select * from crime_scene_report
+where date = 20180115 and city = 'SQL City' and type = 'murder';
+```
+
+El resultado que nos arroja son los dos testigos que registraron: 
+- Una persona llamada Annabel que vive en algun lado de "Franklin Ave"
+- Una persona que vive en la última casa de "Northwestern Dr"
+
+Buscamos a las personas que se llamen Annabel + algo y que vivan en Fraklin Ave.
+```
+select * from person            
+where address_street_name = "Franklin Ave"
+AND name LIKE '%Annabel%';
+```
+y obtenemos los siguientes datos:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso1.png?raw=true "/> 
+
+
+
+
+
+
+
+También investigamos al otro testigo e intentamos localizarlo con la siguiente query:
+
+```
+select * from person
+where address_street_name = 'Northwestern Dr'
+order by address_number desc
+limit 1;
+```
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso2.png?raw=true "/> 
+
+Investigamos más sobre estas personas para intentar hayar su ID y ver que testificaron:
+
+
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
