@@ -557,6 +557,69 @@ cuyo resultado es:
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/coche_sospechoso.png?raw=true "/> 
 
+Por tanto el sospechoso se subió a un Toyota Prius de matrícula H42W0X cuyo titular es una mujer rubia de 21 años y de ojos azules con id de licencia 183449. Vamos a investigar más sobre esta chica con la siguiente query anidada:
+
+```
+select person.id, name, license_id, address_number, address_street_name, ssn from person 
+join drivers_license on drivers_license.id = person.license_id
+where person.license_id = (select id from drivers_license
+WHERE plate_number LIKE "H42W%")
+```
+
+cuyo resultado es:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/vecina_sospechoso.png?raw=true "/> 
+
+y nos damos cuenta de que es Maxine Whitely, la vecina del sospechoso Joe Germuska. Lo siguiente que haremos será buscar en facebook por si publicó algo esa noche. Tampoco encontramos nada asi.
+
+Vamos a buscar con quien coincidieron las testigos esa noche con la siguiente query:
+
+```
+select * from person
+where id in (select person_id from facebook_event_checkin
+where event_name = 'The Funky Grooves Tour');
+```
+
+con un tal 'Jeremy Bowers', vamos a buscar más información sobre el en otras tablas.
+
+```
+select * from get_fit_now_member where
+person_id = (select id from person
+where id in (select person_id from facebook_event_checkin
+where event_name = 'The Funky Grooves Tour')
+limit 1 offset 2
+);
+```
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso3.png?raw=true "/> 
+
+Nos damos cuenta de que su id empieza por 48Z como dijo una de los testigos: **. The membership number on the bag started with "48Z ..., The man got into a car with a plate that included "H42W"** Vamos a mirar que coche tiene y que matricula a ver si coincide con lo que dijo la testigo, y efectivamente! Su matricula es 0H42W2.
+
+```
+INSERT INTO solution VALUES (1, 'Jeremy Bowers');
+        
+        SELECT value FROM solution;
+```
+
+Congrats, you found the murderer! But wait, there's more... If you think you're up for a challenge, try querying the interview transcript of the murderer to find the real villain behind this crime. If you feel especially confident in your SQL skills, try to complete this final step with no more than 2 queries. Use this same INSERT statement with your new suspect to check your answer.
+
+El sujeto dijo esto:
+
+I was hired by a woman with a lot of money. I don't know her name but I know she's around 5'5" (65") or 5'7" (67"). She has red hair and she drives a Tesla Model S. I know that she attended the SQL Symphony Concert 3 times in December 2017.
+
+Para buscar esto en una sola query usamos una consulta con dos subqueries:
+
+```
+select * from person 
+where id in (select person_id from facebook_event_checkin
+where person_id in (select person.id from person
+join drivers_license on person.license_id = drivers_license.id
+where car_model = 'Model S' and height BETWEEN 65 and 67 and hair_color = 'red'));
+```
+
+y cuyo resultado es:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso_final.png?raw=true "/> 
 
 
 
