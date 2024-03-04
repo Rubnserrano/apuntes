@@ -438,4 +438,44 @@ Con esto lo que quiero abordar es la importancia de saber que cláusulas hay en 
 **Repasar substring, concat**
 ## SQL INTERMEDIO
 
+#### SUBQUERIES
+Hay situaciones en las que para obtener la información que nosotros necesitamos no nos basta de los resultados de una única consulta, por lo que tendremos que realizar consultas de otras consultas.
+
+Se puede hacer referencia a una subconsulta en cualquier lugar donde se pueda hacer referencia a una tabla normal.  Dentro de un FROM puedes realizar JOINS con subconsultas, dentro de restricciones WHERE o HAVING puedes probar expresiones con los resultados de subconsultas e incluso en SELECTs, que te permitan devolver datos directamente de la subconsulta.
+**Importante:** Cada subconsulta debe estar completamente entre paréntesis para establecer la jerarquía adecuada.
+
+_Sub consultas correlacionadas_
+La consulta interna hace referencia a una columna o alias de la consulta externa y depende de ella. A diferencia de las subconsultas anteriores, cada una de las consultas debe ejecutarse para cada una de las filas de la consulta externa, ya que la consulta interna depende de la fila de la consulta externa actual.
+
+Ejemplo:
+
+```
+En lugar de la lista anterior solo de Asociados de Ventas, imagine si tiene una lista general de Empleados, sus departamentos (ingeniería, ventas, etc.), ingresos y salario. Esta vez, está buscando en toda la empresa los empleados que se desempeñan peor que el promedio en su departamento.
+
+Para cada empleado, deberá calcular su costo en relación con los ingresos promedio generados por todas las personas de su departamento. Para tomar el promedio del departamento, la subconsulta necesitará saber en qué departamento se encuentra cada empleado:
+```
+
+```
+SELECT * FROM employees 
+WHERE salary > 
+	(SELECT AVG(revenue_generated) 
+	FROM employees AS dept_employees 
+	WHERE dept_employees.department = employees.department);
+```
+
+_Pruebas de existencia_
+Cuando hablamos del uso del WHERE anteriormente en las consultas básicas, usamos el operador IN para verificar si el valor existía en una lista fija de valores. En consultas más complejas, esto se puede ampliar mediante subconsultas para probar si existe un valor en una lista dinámica de valores.
+
+```
+SELECT *, … 
+FROM mytable 
+WHERE column 
+	IN/NOT IN (SELECT another_column 
+			   FROM another_table);
+```
+
+
+#### UNIONS, INTERSECTIONS AND EXCEPTIONS
+
+
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
