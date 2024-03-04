@@ -504,14 +504,35 @@ y obtenemos los siguientes datos:
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso1.png?raw=true "/> 
 
+Para utilizar las subqueries, voy a buscar en la tabla interview todo lo que haya filtrando por el id de Annable de la siguiente forma:
 
+```
+select * from interview     
+where person_id = (SELECT id from person
+						 where address_street_name = "Franklin Ave"
+						 AND name LIKE '%Annabel%');
+```
+
+cuyo resultado es el siguiente: 
+**'I saw the murder happen, and I recognized the killer from my gym when I was working out last week on January the 9th.'** 
+Obtenemos el primer sospechoso, el cual estuvo a la vez en el gimnasio que Annabel el día 9/01/2018. 
+
+```
+select membership_id, name, id,person_id, check_in_date, check_in_time, check_out_time from get_fit_now_check_in
+join get_fit_now_member on get_fit_now_check_in.membership_id = get_fit_now_member.id
+where check_in_date = 20180109 and check_in_time BETWEEN 1600 AND 1700;
+```
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso_gym.png?raw=true "/> 
+
+Y con su id filtramos por más tablas, buscando más pistas. No parece que le hayan interrogado 
+Encontramos su id y buscamos que dijo en la entrevista.
 
 
 
 
 
 También investigamos al otro testigo e intentamos localizarlo con la siguiente query:
-
 ```
 select * from person
 where address_street_name = 'Northwestern Dr'
