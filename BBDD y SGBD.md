@@ -525,14 +525,15 @@ where check_in_date = 20180109 and check_in_time BETWEEN 1600 AND 1700;
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso_gym.png?raw=true "/> 
 
-Y con su id filtramos por más tablas, buscando más pistas. No parece que le hayan interrogado 
-Encontramos su id y buscamos que dijo en la entrevista.
+Y con su id filtramos por más tablas, buscando más pistas. 
+Obtenemos más información suya si buscamos en la tabla persons, de donde obtenemos su número de carnet de conducir, su domiciolio y su ssn (que parece ser el número de la seguridad social o algo del estilo)
 
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/datos_joe.png?raw=true "/> 
 
+No parece que le hayan interrogado todavía ni que haya publicado nada en facebook.  
+Buscamos en la tabla de licencia de conducir más datos suyos como su edad y apariencia física. Sin embargo, pese a tener número de licencia, no se encuentra en la base de datos (o no soy capaz de encontrarlo). Tampoco vive con nadie más, asi que de momento no podemos avanzar más.
 
-
-
-También investigamos al otro testigo e intentamos localizarlo con la siguiente query:
+Investigamos al otro testigo e intentamos localizarlo con la siguiente query:
 ```
 select * from person
 where address_street_name = 'Northwestern Dr'
@@ -542,7 +543,22 @@ limit 1;
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso2.png?raw=true "/> 
 
-Investigamos más sobre estas personas para intentar hayar su ID y ver que testificaron:
+y esa persona comentó en la entrevista lo siguiente:
+**I heard a gunshot and then saw a man run out. He had a "Get Fit Now Gym" bag. The membership number on the bag started with "48Z". Only gold members have those bags. The man got into a car with a plate that included "H42W". **
+
+¡Ajá! Así que con esto sabemos podremos localizar su coche y observar por qué no aparece en la tabla de conductores. Lo hacemos con la siguiente query:
+
+```
+select * from drivers_license
+WHERE plate_number LIKE "H42W%";
+```
+
+cuyo resultado es:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/coche_sospechoso.png?raw=true "/> 
+
+
+
 
 
 Bibliografía: hackkerrank (ejercicios tipo leetcode) y sqlbolt.com (teoria + ejercicios)
