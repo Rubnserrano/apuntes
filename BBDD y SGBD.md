@@ -482,6 +482,12 @@ WHERE column
 
 
 ## Ejercicio MURDER MISTERY
+Con el objetivo de afianzar los conocimientos con un juego propongo esta especie de práctica cuyo objetivo es encontrar a un asesino a través de consultas SQL.
+
+El schema de la base de datos es el siguiente:
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/schema.png?raw=true "/> 
+
 De primeras sabemos que hubo un asesinato en algun lugar de SQL City el dia 15 de enero del 2018.
 Por tanto buscamos en el reporte de escenas del crimen si hay algo registrado con esta consulta:
 
@@ -494,7 +500,7 @@ El resultado que nos arroja son los dos testigos que registraron:
 - Una persona llamada Annabel que vive en algun lado de "Franklin Ave"
 - Una persona que vive en la última casa de "Northwestern Dr"
 
-Buscamos a las personas que se llamen Annabel + algo y que vivan en Fraklin Ave.
+Buscamos a las personas que se llamen Annabel + algo y que vivan en Franklin Ave.
 ```
 select * from person            
 where address_street_name = "Franklin Ave"
@@ -515,7 +521,7 @@ where person_id = (SELECT id from person
 
 cuyo resultado es el siguiente: 
 **'I saw the murder happen, and I recognized the killer from my gym when I was working out last week on January the 9th.'** 
-Obtenemos el primer sospechoso, el cual estuvo a la vez en el gimnasio que Annabel el día 9/01/2018. 
+Obtenemos el primer sospechoso, Joe Germuska, el cual estuvo a la vez en el gimnasio que Annabel el día 9/01/2018. 
 
 ```
 select membership_id, name, id,person_id, check_in_date, check_in_time, check_out_time from get_fit_now_check_in
@@ -570,9 +576,8 @@ cuyo resultado es:
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/vecina_sospechoso.png?raw=true "/> 
 
-y nos damos cuenta de que es Maxine Whitely, la vecina del sospechoso Joe Germuska. Lo siguiente que haremos será buscar en facebook por si publicó algo esa noche. Tampoco encontramos nada asi.
-
-Vamos a buscar con quien coincidieron las testigos esa noche con la siguiente query:
+y nos damos cuenta de que es Maxine Whitely, la vecina del sospechoso Joe Germuska. Lo siguiente que haremos será buscar en facebook por si publicó algo esa noche. No parece que haya más información sobre Maxine y Joe.
+Por tanto, vamos a buscar con quien más coincidieron las testigos esa noche con la siguiente query:
 
 ```
 select * from person
@@ -593,7 +598,9 @@ limit 1 offset 2
 
 <img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/sospechoso3.png?raw=true "/> 
 
-Nos damos cuenta de que su id empieza por 48Z como dijo una de los testigos: **. The membership number on the bag started with "48Z ..., The man got into a car with a plate that included "H42W"** Vamos a mirar que coche tiene y que matricula a ver si coincide con lo que dijo la testigo, y efectivamente! Su matricula es 0H42W2.
+Nos damos cuenta de que su id empieza por 48Z como dijo una de los testigos: **. The membership number on the bag started with "48Z ..., The man got into a car with a plate that included "H42W"** Vamos a mirar que coche tiene y que matricula a ver si coincide con lo que dijo la testigo
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/drivers_jeremy.png?raw=true "/> 
+y efectivamente! Su matricula es 0H42W2.
 
 ```
 INSERT INTO solution VALUES (1, 'Jeremy Bowers');

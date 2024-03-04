@@ -213,7 +213,9 @@ Amazon EC2 ofrece EC2 Auto Scaling que te permite automáticamente añadir o eli
 En términos de escalabilidad, podemos escalar verticalmente (aumentar las especificaciones de nuestras instancias) o de forma horizontal (aumentar el número de instancias).
 
 #### Elastic Load Balancing
+Se trata de un servicio de AWS que distribuye automáticamente el tráfico entrante de las apps o servicios en la nube entre múltiples instancias de EC2 o contenedores dentro de una región de AWS. Mejora la disponibilidad y la escalabilidad distribuyendo la carga de manera equitativa entre recursos disponibles
 
+#### Messaging and queuing
 
 
 
