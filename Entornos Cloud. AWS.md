@@ -216,26 +216,42 @@ En términos de escalabilidad, podemos escalar verticalmente (aumentar las espec
 Se trata de un servicio de AWS que distribuye automáticamente el tráfico entrante de las apps o servicios en la nube entre múltiples instancias de EC2 o contenedores dentro de una región de AWS. Mejora la disponibilidad y la escalabilidad distribuyendo la carga de manera equitativa entre recursos disponibles
 
 #### Messaging and queuing
+La idea básica es que en lugar de que una parte del sistema envíe un mensaje directamente a otra parte, envía el mensaje a una cola. La cola actúa como un buffer temporal que almacena los mensajes hasta que la parte receptora esté lista para procesarlos. Esto significa que si la parte receptora no está disponible en un momento dado, los mensajes permanecen en la cola y no se pierden.
+Dos servicios de AWS que ayudan a implementar este tipo de arquitectura son Amazon Simple Queue Service (SQS) y Amazon Simple Notification Service (SNS). SQS es un servicio que proporciona colas de mensajes que puedes utilizar para almacenar mensajes temporales entre diferentes partes de tu sistema. SNS, por otro lado, te permite enviar mensajes a múltiples partes de tu sistema de una sola vez, lo que es útil para enviar notificaciones a diferentes partes de tu aplicación.
 
 
+## _Lab 'Getting Started with Compute'_
 
+En este laboralatorio introductorio realizamos acciones básicas relacionadas con instancias de EC2. 
+Hemos creado y configurado una instancia con Microsoft Windows Server 2019. Entre las configuraciones cabe destacar la selección de una VPC y un grupo de seguridad que no sean la opción default. Así como la asignación de un rol. (Como ya hicimos en la práctica de iniciación, todo el rollo de permisos necesario para el correcto funcionamiento).
+Además en las opciones avanzadas hemos seleccionado la opción de 'Termination Protection', una especie de seguro que no te deja terminar la instancia hasta que deselecciones la opción. También hemos pegado código en la caja de 'User data text box'.
 
+```
+<powershell>
+# Installing web server
+Install-WindowsFeature -name Web-Server -IncludeManagementTools
+# Getting website code
+wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-100-EDCOMP-1-DEV/lab-01-ec2/code.zip -outfile "C:\Users\Administrator\Downloads\code.zip"
+# Unzipping website code
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Unzip
+{
+    param([string]$zipfile, [string]$outpath)
 
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
+}
+Unzip "C:\Users\Administrator\Downloads\code.zip" "C:\inetpub\"
+# Setting Administrator password
+$Secure_String_Pwd = ConvertTo-SecureString "P@ssW0rD!" -AsPlainText -Force
+$UserAccount = Get-LocalUser -Name "Administrator"
+$UserAccount | Set-LocalUser -Password $Secure_String_Pwd
+</powershell
+```
 
+Este código instala Microsoft Internet Information Services web server, crea una página web simple y configura una contraseña para el usuario Administrador.
 
+También se entra en la parte de monitorización y exploramos una opción que hace captura del escritorio de la máquina. También existe otra opción que se llama Fleet Manager que se encuentra dentro del servicio Systems Manager que te permite conectarte a la máquina e interactuar con toda la interfaz gráfica del so. (Cómo cuando encendemos un pc al uso).
 
-
-
-
-
-# _Terminar MODULE 2: Compute in the Cloud y realizar lab 'Getting Started with Compute'_
-
-Link al lab: 
-
-
-
-
-
-
+Por último, cambiamos el tipo de máquina y también intentamos apagarla. Para esto debemos desactivar la opción de la que antes hemos hablado de 'Termination protection'.
 
 
