@@ -477,8 +477,21 @@ WHERE column
 
 #### UNIONS, INTERSECTIONS AND EXCEPTIONS
 
+Cuando estamos trabajando con varias tablas, las cláusulas UNION y UNION ALL te permiten unir resultados de dos consultas asumiendo que tengan el mismo número de columnas, orden y tipo de datos. Si usamos el UNION sin ALL, las filas duplicadas entre tablas se eliminarán del resultado.
 
+```
+SELECT column, another_column 
+FROM mytable 
+	UNION / UNION ALL / INTERSECT / EXCEPT 
+SELECT other_column, yet_another_column 
+FROM another_table 
+ORDER BY column DESC 
+LIMIT n;
+```
 
+En cuanto al orden, las sentencias UNION se colocan antes de ORDER BY y LIMIT. No es muy común utilizar UNIONs pero si tenemos datos de diferentes tablas que no pueden ser juntadas y procesadas con JOINS puede ser una alternativa.
+Similar a los UNIONS, el operador INTERSECT se asegurará de que solo se devuelvan las filas que sean idénticas en ambos conjuntos. El EXCEPT se asegurará de que solo se devuelvan las filas del primer conjunto de resultados que no estén en el segundo. Esto significa que el EXCEPT depende del orden de las consultas, como LEFT JOIN y RIGHT JOIN.
+INTERSECT y EXCEPT también descartan filas duplicadas después de sus respectivas operaciones aunque en algunas bbdd también se admiten INTERSECT ALL y EXCEPT ALL.
 
 
 ## Ejercicio MURDER MISTERY

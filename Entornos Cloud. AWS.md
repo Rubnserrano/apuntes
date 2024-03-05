@@ -220,6 +220,7 @@ La idea básica es que en lugar de que una parte del sistema envíe un mensaje d
 Dos servicios de AWS que ayudan a implementar este tipo de arquitectura son Amazon Simple Queue Service (SQS) y Amazon Simple Notification Service (SNS). SQS es un servicio que proporciona colas de mensajes que puedes utilizar para almacenar mensajes temporales entre diferentes partes de tu sistema. SNS, por otro lado, te permite enviar mensajes a múltiples partes de tu sistema de una sola vez, lo que es útil para enviar notificaciones a diferentes partes de tu aplicación.
 
 
+# Laboratorios iniciación AWS Educate
 ## _Lab 'Getting Started with Compute'_
 
 En este laboralatorio introductorio realizamos acciones básicas relacionadas con instancias de EC2. 
@@ -255,3 +256,10 @@ También se entra en la parte de monitorización y exploramos una opción que ha
 Por último, cambiamos el tipo de máquina y también intentamos apagarla. Para esto debemos desactivar la opción de la que antes hemos hablado de 'Termination protection'.
 
 
+## _Lab 'Getting Started with Storage'_
+
+Este laboratorio se basa en crear un bucket donde hostearemos una página web estática. Teniendo en cuenta esto, debemos tener las ACL (Listas de control de acceso) habilitadas y también habilitar la opción de configuración de alojamiento de sitios webs estáticos.
+Subimos los archivos html, css y javascript necesarios para la web y debemos también hacerlos públicos con ACL mediante la opción Acciones.
+Otra función que se trata en este lab es el compartir objetos de forma temporal. Se nos da una url que tiene un tiempo de vida que hemos definido anteriormente.
+
+Por último, creamos una política de buckets para evitar que los archivos sean borrados (mediante código json) y volvemos a subir el archivo html con unos cambios. Observamos el versionamiento de los objetos y que en el bucket queda registrado.
