@@ -242,9 +242,250 @@ Este código hace lo siguiente:
 5. **Describir y seleccionar datos de las tablas**: Utiliza los comandos `DESCRIBE` y `SELECT` para verificar que los datos se hayan cargado correctamente en las tablas ORDER_DETAIL y LOCATION, respectivamente.
 
 
-# Daily City Metrics Update Sproc
+## Daily City Metrics Update Sproc (Paso 6 en el esquema)
 
 Durante este paso estaremos creando nuestro segundo Snowpark Python sproc para Snowflake. Este sproc unirá la tabla ORDER_DETAIL con la tabla LOCATION y la tabla HISTORY_DAY para crear una tabla final agregada para el análisis llamada DAILY_CITY_METRICS.
+
+Ejecutamos el siguiente código:
+
+```sql, python
+USE ROLE HOL_ROLE;
+USE WAREHOUSE HOL_WH;
+USE SCHEMA HOL_DB.HOL_SCHEMA;
+
+CREATE OR REPLACE PROCEDURE LOAD_DAILY_CITY_METRICS_SP()
+RETURNS VARIANT
+LANGUAGE PYTHON
+RUNTIME_VERSION = '3.10'
+PACKAGES = ('snowflake-snowpark-python')
+HANDLER = 'main'
+AS
+$$
+
+from snowflake.snowpark import Session
+import snowflake.snowpark.functions as F
+
+def table_exists(session, schema='', name=''):
+    exists = session.sql("SELECT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '{}' AND TABLE_NAME = '{}') AS TABLE_EXISTS".format(schema, name)).collect()[0]['TABLE_EXISTS']
+    return exists
+
+def main(session: Session) -> str:
+    schema_name = "HOL_SCHEMA"
+    table_name = "DAILY_CITY_METRICS"
+    
+    # Define the tables
+    order_detail = session.table("ORDER_DETAIL")
+    history_day = session.table("FROSTBYTE_WEATHERSOURCE.ONPOINT_ID.HISTORY_DAY")
+    location = session.table("LOCATION")
+  
+    # Join the tables
+    order_detail = order_detail.join(location, order_detail['LOCATION_ID'] == location['LOCATION_ID'])
+    order_detail = order_detail.join(history_day, (F.builtin("DATE")(order_detail['ORDER_TS']) == history_day['DATE_VALID_STD']) & (location['ISO_COUNTRY_CODE'] == history_day['COUNTRY']) & (location['CITY'] == history_day['CITY_NAME']))
+
+    # Aggregate the data
+    final_agg = order_detail.group_by(F.col('DATE_VALID_STD'), F.col('CITY_NAME'), F.col('ISO_COUNTRY_CODE')) \
+                        .agg( \
+                            F.sum('PRICE').alias('DAILY_SALES_SUM'), \
+                            F.avg('AVG_TEMPERATURE_AIR_2M_F').alias("AVG_TEMPERATURE_F"), \
+                            F.avg("TOT_PRECIPITATION_IN").alias("AVG_PRECIPITATION_IN"), \
+                        ) \
+                        .select(F.col("DATE_VALID_STD").alias("DATE"), F.col("CITY_NAME"), F.col("ISO_COUNTRY_CODE").alias("COUNTRY_DESC"), \
+                            F.builtin("ZEROIFNULL")(F.col("DAILY_SALES_SUM")).alias("DAILY_SALES"), \
+                            F.round(F.col("AVG_TEMPERATURE_F"), 2).alias("AVG_TEMPERATURE_FAHRENHEIT"), \
+                            F.round(F.col("AVG_PRECIPITATION_IN"), 2).alias("AVG_PRECIPITATION_INCHES"), \
+                        )
+                        
+    # If the table doesn't exist then create it
+    if not table_exists(session, schema=schema_name, name=table_name):
+        final_agg.write.mode("overwrite").save_as_table(table_name)
+        return f"Successfully created {table_name}"
+
+    # Otherwise update it
+    else:
+        cols_to_update = {c: final_agg[c] for c in final_agg.schema.names}
+        dcm = session.table(f"{schema_name}.{table_name}")
+        dcm.merge(final_agg, (dcm['DATE'] == final_agg['DATE']) & (dcm['CITY_NAME'] == final_agg['CITY_NAME']) & (dcm['COUNTRY_DESC'] == final_agg['COUNTRY_DESC']), \
+                            [F.when_matched().update(cols_to_update), F.when_not_matched().insert(cols_to_update)])
+        return f"Successfully updated {table_name}"
+$$;
+```
+
+1. **Establecer el rol, almacén y esquema**: El código comienza seleccionando el rol HOL_ROLE, el almacén HOL_WH y el esquema HOL_DB.HOL_SCHEMA. Esto define el contexto en el que se ejecutarán los comandos dentro del procedimiento almacenado.
+2. **Crear el procedimiento almacenado**: Define un procedimiento almacenado escrito en Python que calcula y actualiza métricas diarias de ventas por ciudad y país.
+3. **Función `table_exists`**: Esta función verifica si una tabla específica ya existe en el esquema especificado. Utiliza una consulta SQL para buscar la tabla en el esquema y devuelve un valor booleano que indica si la tabla existe o no.
+4. **Función `main`**: Esta es la función principal del procedimiento almacenado. Realiza las siguientes acciones:
+    a. Define el esquema y nombre de la tabla donde se almacenarán las métricas diarias de la ciudad.
+    b. Obtiene los datos de tres tablas diferentes: ORDER_DETAIL, FROSTBYTE_WEATHERSOURCE.ONPOINT_ID.HISTORY_DAY y LOCATION.
+    c. Une estas tablas utilizando condiciones específicas.
+    d. Realiza agregaciones en los datos unidos para calcular las métricas diarias de ventas, temperatura promedio y precipitación promedio por ciudad y país.
+    e. Si la tabla de métricas diarias no existe, la crea y guarda los resultados de las agregaciones.
+    f. Si la tabla ya existe, actualiza los datos existentes en lugar de sobrescribirlos, utilizando la función merge de Snowflake.
+5. **Comando SQL Python**: El código SQL definido como una cadena de texto se ejecutará en Snowflake cuando se invoque el procedimiento almacenado.
+
+Ahora en la UI de Snowflake si vamos a Monitoring -> Query History. Aquí podemos ver todos los logs asociados a nuestra cuenta de Snowflake, sin importar que herramienta o proceso lo haya iniciado.
+
+
+## Orchestrate jobs (Paso 7 en el esquema)
+En este paso estaremos orquestando nuestra nueva pipeline con la herramienta nativa de Snowflake llamada Tasks. Podemos crearlas y deployarlas usando tanto SQL como la API de Task de Python. Esta vez usaremos esta última opción.
+
+Crearemos dos tasks, una por cada procedimiento guardado y las encadenaremos. Desplegaremos las tasks o las correremos para poner en funcionamiento la pipeline.
+
+#### Resumen conceptos importantes orquestación
+- **Tareas (Tasks)**: Son la unidad básica de ejecución en Snowflake. Pueden ejecutar una única declaración SQL, llamar a un procedimiento almacenado o cualquier lógica procedural utilizando el scripting de Snowflake. Las tareas forman parte de un Grafo Acíclico Dirigido (DAG).
+- **Grafo Acíclico Dirigido (DAG)**: Es una serie de tareas organizadas por sus dependencias, que fluyen en una única dirección. Una tarea se ejecuta solo después de que todas sus tareas predecesoras se hayan ejecutado con éxito.
+- **Intervalo de Programación (Schedule Interval)**: Es el tiempo entre ejecuciones sucesivas programadas de una tarea independiente o de la tarea raíz en un DAG.
+- **Implementación de un DAG**: Cuando creas un DAG, defines el intervalo de programación, la lógica de transformación en las tareas y las dependencias entre tareas. Sin embargo, es necesario implementar el DAG para que las transformaciones se ejecuten según la programación establecida. Si no se implementa el DAG, no se ejecutarán las transformaciones programadas.
+- **Ejecución de un DAG**: Cuando se implementa un DAG, se ejecuta según la programación definida. Cada ejecución programada se denomina "Ejecución de Tarea" (Task Run).
+
+El código para implementar la orquestación es el siguiente:
+```python
+from datetime import timedelta
+#from snowflake.connector import connect
+from snowflake.snowpark import Session
+from snowflake.snowpark import functions as F
+from snowflake.core import Root
+from snowflake.core.task import StoredProcedureCall, Task
+from snowflake.core.task.dagv1 import DAGOperation, DAG, DAGTask
+
+# Alternative way to create the tasks
+def create_tasks_procedurally(session: Session) -> str:
+    database_name = "HOL_DB"
+    schema_name = "HOL_SCHEMA"
+    warehouse_name = "HOL_WH"
+    api_root = Root(session)
+    schema = api_root.databases[database_name].schemas[schema_name]
+    tasks = schema.tasks
+    
+    # Define the tasks
+    task1_entity = Task(
+        "LOAD_ORDER_DETAIL_TASK",
+        definition="CALL LOAD_EXCEL_WORKSHEET_TO_TABLE_SP(BUILD_SCOPED_FILE_URL(@FROSTBYTE_RAW_STAGE, 'intro/order_detail.xlsx'), 'order_detail', 'ORDER_DETAIL')",
+        warehouse=warehouse_name
+    )
+    task2_entity = Task(
+        "LOAD_LOCATION_TASK",
+        definition="CALL LOAD_EXCEL_WORKSHEET_TO_TABLE_SP(BUILD_SCOPED_FILE_URL(@FROSTBYTE_RAW_STAGE, 'intro/location.xlsx'), 'location', 'LOCATION')",
+        warehouse=warehouse_name
+    )
+    task3_entity = Task(
+        "LOAD_DAILY_CITY_METRICS_TASK",
+        definition="CALL LOAD_DAILY_CITY_METRICS_SP()",
+        warehouse=warehouse_name
+    )
+    task2_entity.predecessors = [task1_entity.name]
+    task3_entity.predecessors = [task2_entity.name]
+
+    # Create the tasks in Snowflake
+    task1 = tasks.create(task1_entity, mode="orReplace")
+    task2 = tasks.create(task2_entity, mode="orReplace")
+    task3 = tasks.create(task3_entity, mode="orReplace")
+  
+    # List the tasks in Snowflake
+    for t in tasks.iter(like="%task"):
+        print(f"Definition of {t.name}: \n\n", t.name, t.definition, sep="", end="\n\n--------------------------\n\n")
+    task1.execute()
+#    task1.get_current_graphs()
+#    task1.suspend()
+#    task2.suspend()
+#    task3.suspend()
+#    task3.delete()
+#    task2.delete()
+#    task1.delete()
+
+# Create the tasks using the DAG API
+def main(session: Session) -> str:
+    database_name = "HOL_DB"
+    schema_name = "HOL_SCHEMA"
+    warehouse_name = "HOL_WH"
+    api_root = Root(session)
+    schema = api_root.databases[database_name].schemas[schema_name]
+    tasks = schema.tasks
+    dag_op = DAGOperation(schema)
+
+    # Define the DAG
+    dag_name = "HOL_DAG"
+    dag = DAG(dag_name, schedule=timedelta(days=1), warehouse=warehouse_name)
+    with dag:
+        dag_task1 = DAGTask("LOAD_ORDER_DETAIL_TASK", definition="CALL LOAD_EXCEL_WORKSHEET_TO_TABLE_SP(BUILD_SCOPED_FILE_URL(@FROSTBYTE_RAW_STAGE, 'intro/order_detail.xlsx'), 'order_detail', 'ORDER_DETAIL')", warehouse=warehouse_name)
+        dag_task2 = DAGTask("LOAD_LOCATION_TASK", definition="CALL LOAD_EXCEL_WORKSHEET_TO_TABLE_SP(BUILD_SCOPED_FILE_URL(@FROSTBYTE_RAW_STAGE, 'intro/location.xlsx'), 'location', 'LOCATION')", warehouse=warehouse_name)
+        dag_task3 = DAGTask("LOAD_DAILY_CITY_METRICS_TASK", definition="CALL LOAD_DAILY_CITY_METRICS_SP()", warehouse=warehouse_name)
+        dag_task3 >> dag_task1
+        dag_task3 >> dag_task2
+  
+    # Create the DAG in Snowflake
+    dag_op.deploy(dag, mode="orreplace")
+    dagiter = dag_op.iter_dags(like='hol_dag%')
+
+    for dag_name in dagiter:
+        print(dag_name)
+    dag_op.run(dag)
+    
+#    dag_op.delete(dag)
+    return f"Successfully created and started the DAG"
+    
+# For local debugging
+# Be aware you may need to type-convert arguments if you add input parameters
+
+if __name__ == '__main__':
+    import os, sys
+    
+    # Add the utils package to our path and import the snowpark_utils function
+    current_dir = os.getcwd()
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.append(parent_dir)
+    from utils import snowpark_utils
+    session = snowpark_utils.get_snowpark_session()
+    if len(sys.argv) > 1:
+        print(main(session, *sys.argv[1:]))  # type: ignore
+    else:
+        print(main(session))  # type: ignore
+    session.close()
+```
+
+### Breve explicación del código:
+dag_task1 carga los datos de order_detail llamando al procedimiento almacenado LOAD_EXCEL_WORKSHEET_TO_TABLE_SP.
+dag_task2 carga los datos de localización llamando al procedimiento almacenado LOAD_EXCEL_WORKSHEET_TO_TABLE_SP.
+dag_task3 actualiza la tabla DAILY_CITY_METRICS en snowflake llamando al procedimiento almacenado LOAD_DAILY_CITY_METRICS_SP.
+
+**La definición dag_task3 >> dag_task1 significa que dag_task3 depende de dag_task1.**
+
+Una vez creado el DAG y definido el orden de ejecución de las task, lo deployamos con
+
+```python
+    dag_op.deploy(dag, mode="orreplace")
+```
+
+Además de que se corra periódicamente también podemos ejecutarlo cuando queramos para debuggear con la función
+
+```python
+dag_op.run(dag)
+```
+
+Snowflake guarda metadatos de casi todo lo que se hace y los tasks no son una excepción. Con esta sentencia SQL podemos monitorizarlas:
+
+```sql
+-- Get a list of tasks 
+SHOW TASKS; 
+-- Task execution history in the past day 
+SELECT * 
+FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY( SCHEDULED_TIME_RANGE_START=>DATEADD('DAY',-1,CURRENT_TIMESTAMP()),
+										   RESULT_LIMIT => 100)) 
+										   ORDER BY SCHEDULED_TIME DESC ;
+-- Scheduled task runs 
+SELECT 
+TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP, SCHEDULED_TIME) NEXT_RUN,
+SCHEDULED_TIME, NAME, STATE 
+FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY())
+WHERE STATE = 'SCHEDULED' 
+ORDER BY COMPLETED_TIME DESC;
+```
+
+Me he quedado un poco colgado por errores que da el código base, como que no encuentra una función que llamamos con from utils import ..., y parece que esta todo bien definido pero aún así no encuentra la función..
+
+
+
+
+
 ## Tutorial para más adelante Snowflake + dbt + python
 https://quickstarts.snowflake.com/guide/data_engineering_with_snowpark_python_and_dbt/index.html?index=..%2F..index#0
 
