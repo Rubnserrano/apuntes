@@ -528,8 +528,8 @@ Para utilizar las subqueries, voy a buscar en la tabla interview todo lo que hay
 ```sql
 select * from interview     
 where person_id = (SELECT id from person
-						 where address_street_name = "Franklin Ave"
-						 AND name LIKE '%Annabel%');
+	where address_street_name = "Franklin Ave"
+	AND name LIKE '%Annabel%');
 ```
 
 cuyo resultado es el siguiente: 
