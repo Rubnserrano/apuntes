@@ -58,6 +58,68 @@ Bibliografía:  https://www.cloudflare.com/es-es/learning/network-layer/how-does
 5. Una vez que el enrutador decide la ruta, reenvía el paquete al siguiente salto en esa ruta. Este próximo salto podría ser otro enrutador en la misma red o en una red diferente, dependiendo de la configuración de la red y la ruta óptima hacia el destino final.
 6. El paquete sigue su camino a través de la red, pasando por varios enrutadores según sea necesario, hasta que finalmente llega al destino deseado fuera de tu red local.
 
-Para entender todo esto mejor necesitamos entender el modelo OSI.
 
-### Modelo OSI
+
+Una vez realizada esta pequeña introducción que aunque no tenga que ver directamente con muchos de los conceptos prácticos del ámbito data, nunca esta de mal saber, empezamos con la teorñia de procesamiento de datos.
+
+# Tema 2: Arquitecturas de procesamiento de datos
+## 1.- Introducción a las Arquitecturas de Procesamiento de datos
+### 1.1.- Batch processing vs Stream Processing
+Prácticamente todos los datos con los que tratamos son intrínsecamente _streaming_. Los datos se producen casi siempre y se actualizan continuamente en su origen. La _ingestión por lotes_ es una forma especializada y conveniente de procesar este flujo en grandes fragmentos, por ejemplo, manejar un día completo de datos en un sólo lote.
+
+La ingestión por streaming nos permite proporcionar datos a los sistemas posteriores, ya sean otras aplicaciones, bases de datos o sistemas de analítica, a una velocidad continua y en tiempo real. En este caso, _el real-time (o near real-time)_ significa que los datos están disponibles para el sistema posterior poco tiempo después de producirse. 
+
+Los datos por lotes se ingieren en un intervalo de tiempo predeterminado o cuando los datos alcanzan un umbral de tamaño preestablecido.
+
+¿Debo optar por streaming en primer lugar? A pesar de lo atractivo que resulte el enfoque del streaming en primer lugar, hay muchas contrapartidas que hay que entender y tener en cuenta. Estas son algunas preguntas que debemos hacernos para determinar si la ingestión por streaming en lugar de en batch es una opción adecuada:
+- Si ingiero los datos en tiempo real, ¿pueden soportar el ritmo de flujo de datos los sistemas de almacenamiento posteriores?
+- ¿Necesito una ingestión de datos en milisegundos en tiempo real? ¿O funcionaría un enfoque de microlotes. acumulando e ingeriendo datos, digamos, cada minuto?
+- ¿Son fiables y redudantes mi pipeline y mi sistema de streaming si mi infraestructura falla?
+Como puede ver, considerar el streaming en primer lugar puede parecer una buena idea, pero no siempre es sencillo, se generan costes y aparecen complejidades adicionales de forma inherente. En resumen, adopte el streaming en tiempo real sólo después de identificar un caso de uso empresarial que justifique las contrapartidas frente al uso de lotes.
+
+### 1.2.- Arquitecturas Lambda y Kappa: principios y componentes.
+
+Entre principios y mediados de la década de 2010, la popularidad del trabajo con datos en streaming se disparó con la aparición de Kafka como cola de mensajes altamente escalable y de frameworks para la analítica en streaming. Estas tecnologías permitieron a las empresas realizar nuevos tipos de analítica y modelos sobre grandes cantidades de datos, agregación y clasificación de usuarios así como recomendaciones de productos. Los ingenieros de datos necesitaban averiguar como conciliar los datos por lotes y en streaming en una única arquitectura. La **arquitectura Lambda** fue una de las primeras respuestas populares a este problema.
+
+### **Arquitectura Lambda**
+Esta arquitectura tiene sistemas que operan independientemente unos de otros: lotes, streaming y servicio.
+El sistema fuente es idealmente inmutable y solo permite hacer anexiones, enviando los datos a dos destinos para su procesamiento: flujo y lote. El procesamiento en flujo pretende servir los datos con la menor latencia posible en una capa de "velocidad", normalmente una base de datos NoSQL. En la capa de procesamiento por lotes, los datos se procesan y transforman en un sistema como puede ser un data warehouse, creando vistas precalculadas y agregadas de los datos. La capa de servicio proporciona una vista combinada agregando los resultados de las consultas de las dos capas.
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/lambda_arch.png?raw=true "/> 
+
+La arquitectura Lambda tiene su parte de desafíos y críticas. La gestión de múltiples sistemas con diferentes bases de código es tan difícil como parece, y se crean sistemas propensos a errores con código y datos extremadamente difíciles de conciliar.
+
+Mencionamos la arquitectura Lambda porque sigue llamando la atención y es popular en los resultados de los motores de búsqueda para la arquitectura de datos. Lambda no es nuestra primera recomendación si está tratando de combinar datos de streaming y por lotes para la analítica. La tecnología y las prácticas han progresado.
+
+A continuación, veamos una reacción a la arquitectura Lambda, la arquitectura **Kappa**
+
+
+### **Arquitectura Kappa**
+Como respuesta a las deficiencias de la arquitectura Lambda, Jay Kreps propuso una alternativa llamada **arquitectura Kappa**. La tesis central es la siguiente: ¿por qué no usar una plataforma de procesamiento de streaming como columna vertebral para toda la gestión de datos, ingestión, almacenamiento y servicio? Esto facilita una verdadera arquitectura basada en eventos. El procesamiento en tiempo real y por lotes se puede aplicar sin problemas a los mismos datos al leer directamente el flujo de eventos en vivo y reproducir grandes fragmentos de datos para el procesamiento por lotes.
+
+<img src=  "https://github.com/Rubnserrano/apuntes/blob/main/imgs/kappa_arch.png?raw=true "/> 
+
+Aunque el artículo original sobre esta arquitectura se publicó en 2014, no hemos visto que se haya producido una adopción generalizada. Puede haber un par de razones para ello. En primer lugar, el streaming en sí mismo sigue siendo un poco misterioso para muchas empresas; es fácil hablar de él, pero más difícil de ejecutar de lo esperado. En segundo lugar, la arquitectura Kappa resulta complicada y cara en la práctica. 
+
+
+### El modelo Dataflow y la unificación por lotes y streaming
+Tanto Lambda como Kappa trataron de abordar las limitaciones del ecosistema Hadoop de la época intentando unir con cinta adhesiva herramientas complicadas que, para empezar, probablemente no encajaban de forma natural. El reto fundamental de unificar los datos por lotes y los de streaming se mantuvo y estas dos arquitecturas proporcionaron inspiración y los cimientos para seguir avanzando.
+
+Uno de los principales problemas de la gestión del procesamiento en batch y en streaming es la unificación de múltiples rutas de código. Aunque la arquitectura Kappa se basa en una capa unificada de colas y almacenamiento, todavía hay que enfrentarse al uso de dferentes herramientos para recoger estadísticas en tiempo real o ejecutar trabajos de agregación de lotes. Hoy en día, los ingenieros tratan de resolver este problema de varias maneras. Google se hizo notar al desarrollar el modelo DataFlow y el framework Apache Beam.
+
+La idea central en el modelo de flujo de datos es ver todos los datos como eventos, ya que la agregación se realiza sobre varios tipos de ventanas. Los flujos de eventos en tiempo real son datos no acotados. Los lotes de datos son simpleente flujos de eventos acotados, y los límites proporcionan una ventana natural. Los ingenieros pueden elegir entre varias ventanas para la agregación en tiempo real, como las deslizantes o las estáticas. El procesamiento en tiempo real y por lotes se realiza en el mismo sistema utilizando un código casi idéntico.
+
+La filosofía de 'lotes como caso especial de streaming' está ahora más extendida. Varios frameworks como Flink y Spark han adoptado un enfoque similar.
+
+
+
+
+
+
+
+
+
+
+
+
+Bibliografia: Libro Fundamientos de Ingeniería de Datos, Joe Reis y Matt Housley (O'Reilly)
