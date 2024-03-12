@@ -263,3 +263,4 @@ Subimos los archivos html, css y javascript necesarios para la web y debemos tam
 Otra función que se trata en este lab es el compartir objetos de forma temporal. Se nos da una url que tiene un tiempo de vida que hemos definido anteriormente.
 
 Por último, creamos una política de buckets para evitar que los archivos sean borrados (mediante código json) y volvemos a subir el archivo html con unos cambios. Observamos el versionamiento de los objetos y que en el bucket queda registrado.
+
