@@ -3,6 +3,25 @@
 # Snowflake
 
 ## Introducción a Snowflake. ¿Qué es? ¿Qué soluciona? 
+
+Snowflake es una aplicación SaaS (Software as a Service) basada en el concepto Data Cloud que proporciona una arquitectura de **datos compartidos multiclúster** con altos índices de rendimiento, escalabilidad y simultaneidad.
+
+Snowflake **resuelve el problema de los silos de datos**: es una plataforma que impulsa y proporciona el acceso a una repositorio común de datos en la nube, incluyendo niveles de almacenamiento, procesamiento y servicios globales integrados lógicamente, aunque separados en el espacio físico.
+
+Los ámbitos de aplicación donde Snowflake despliega todas sus virtudes son **Data Warehouse** (con su propio motor SQL), **Data Lake**, ingeniería de datos, ciencia de datos, intercambio de datos y desarrollo de aplicaciones de datos.
+
+Para ubicar mejor en qué consiste Snowflake, podemos decir que es análogo a Synapse (Microsoft Azure), Redshift (Amazon Web Services) o BigQuery (Google Cloud), con la ventaja de que **permite elegir el proveedor de servicios Cloud** que queramos de entre estos tres, así como la región (zona de disponibilidad) de cada uno.
+La arquitectura de Snowflake se divide en tres capas de _software_:
+
+1. _Database Storage._
+2. _Query Processing._
+3. _Cloud Services._
+
+La primera capa es **donde residen los datos**: Snowflake da formato a los datos cuando son subidos a la nube, de modo que su organización queda optimizada en términos de tamaño, metadatos o compresión. Solo pueden ser consultados mediante instrucciones SQL.
+
+La segunda capa consiste en **almacenes virtuales de consultas**. En cada uno de ellos residen varios nodos para trabajar en paralelo en los servicios de la capa siguiente.
+
+La tercera capa contiene los **servicios** encargados de coordinar las actividades. Snowflake las gestiona y se ejecutan sobre las instancias del proveedor de servicios que se haya elegido.
 ## Snowflake tutorial #1. Intro to Data Engineering with Snowpark Python. 
 ## What you will learn
 
@@ -491,3 +510,22 @@ https://quickstarts.snowflake.com/guide/data_engineering_with_snowpark_python_an
 
 ## Tutorial Data engineering with snowpark python
 https://quickstarts.snowflake.com/guide/data_engineering_pipelines_with_snowpark_python/index.html?index=..%2F..index#9
+
+
+
+
+# DBT
+
+DBT permite a los ingenieros de datos y analistas realizar transformaciones en los datos escribiendo sentencias SQL de tipo SELECT. Internamente, DBT traduce estas sentencias en tablas y en vistas. De esta forma facilita la creación de transformaciones sobre los datos disponibles en el data warehouse
+
+Hay que entender que DBT no realiza movimientos de datos, por lo que no lo deberíamos considerar una herramienta ETL, ELT ni comparar con ellas ya que solamente se encargaría de la «T». Las transformaciones que soporta son las que se pueden hacer con SQL con las que hace pushdown a la tecnología de data warehouse para su ejecución y se configuran con ficheros YAML y plantillas Jinja dinámicas.
+
+**Un modelo en DBT es simplemente una sentencia SELECT que permite transformar datos**. Este modelo debe ser orquestado con otros modelos, y es que DBT permite escribir SQL de manera modular. Para ejecutar, se parte de la creación de un DAG (Grafo Dirigido Acíclico) interno que transforma los datos.
+
+En DBT podemos tener dos modelos que usan la misma subconsulta. En vez de tener que replicarla y mantenerla por duplicado, podemos referenciarla. Lo mismo ocurre a nivel de campos dentro de una consulta.
+
+Así, vemos que los modelos de DBT se basan en el resultado de otros modelos o de la salida de las fuentes de datos. Estas fuentes de datos también se pueden definir con **ficheros de configuración YAML**.
+
+Para enriquecer las consultas se usa Jinja2, un sistema de plantillas para Python. Este motor permite escribir consultas parametrizadas, reutilizar bloques de código y sentencias y ocultar la complejidad subyacente para hacer el código más legible. La modularización permite un mantenimiento del código más sencillo, lo que facilita la labor de los equipos de desarrollo.
+
+La principal ventaja de DBT es que elimina la necesidad de programar en Spark, ya sea con Scala u otro lenguaje. Antes, para conseguir esto, se debía desarrollar un motor propio que gestionaba la generación de código SQL a partir de metadatos, y luego enviarlo a través de JDBC al data warehouse, lo que es mucho más complejo y costoso.
